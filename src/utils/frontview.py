@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-z
+
 def lidar_to_2d_front_view(points,
                            v_res=0.35,
                            h_res=0.4,
@@ -53,7 +53,6 @@ def lidar_to_2d_front_view(points,
     x_lidar = points[:, 0]
     y_lidar = points[:, 1]
     z_lidar = points[:, 2]
-    r_lidar = points[:, 3] # Reflectance
     # Distance relative to origin when looked from top
     d_lidar = np.sqrt(x_lidar ** 2 + y_lidar ** 2)
     # Absolute distance relative to origin
@@ -84,7 +83,7 @@ def lidar_to_2d_front_view(points,
 
     # WHAT DATA TO USE TO ENCODE THE VALUE FOR EACH PIXEL
     if val == "reflectance":
-        pixel_values = r_lidar
+        pixel_values = -d_lidar
     elif val == "height":
         pixel_values = z_lidar
     else:
@@ -103,7 +102,4 @@ def lidar_to_2d_front_view(points,
     plt.xlim([0, x_max])   # prevent drawing empty space outside of horizontal FOV
     plt.ylim([0, y_max])   # prevent drawing empty space outside of vertical FOV
 
-    if saveto is not None:
-        fig.savefig(saveto, dpi=dpi, bbox_inches='tight', pad_inches=0.0)
-    else:
-        fig.show()
+    fig.show()

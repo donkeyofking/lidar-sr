@@ -1,21 +1,21 @@
 import numpy as np
 
 # ==============================================================================
-#                                                                   SCALE_TO_255
+#                                                                   SCALE_TO_1
 # ==============================================================================
-def scale_to_255(a, min, max, dtype=np.float):
-    """ Scales an array of values from specified min, max range to 0-255
-        Optionally specify the data type of the output (default is uint8)
+def scale_to_1(a, min, max, dtype=np.float):
+    """ Scales an array of values from specified min, max range to 0-1
+        Optionally specify the data type of the output (default is float)
     """
-    return (((a - min) / float(max - min)) * 255).astype(dtype)
+    return (((a - min) / float(max - min)) ).astype(dtype)
 
 # ==============================================================================
-#                                                                   255_TO_SCALE
+#                                                                   1_TO_SCALE
 # ==============================================================================
-def _255_to_scale(a, min, max, dtype=np.float):
-    """reverse operation of scale_to_255()
+def _1_to_scale(a, min, max, dtype=np.float):
+    """reverse operation of scale_to_1()
     """
-    return (a*(max -min)/255 + min).astype(dtype)
+    return (a*(max -min) + min).astype(dtype)
 
 
 
@@ -23,7 +23,7 @@ def _255_to_scale(a, min, max, dtype=np.float):
 #                                                        POINT_CLOUD_TO_PANORAMA
 # ==============================================================================
 def point_cloud_to_panorama(points,
-                            v_res = 0.025,
+                            v_res = 0.1,
                             h_res = 0.3,
                             v_height = (-3, 13),
                             d_range = (0,80)
@@ -69,7 +69,7 @@ def point_cloud_to_panorama(points,
     d_points = np.clip(d_points, a_min=d_range[0], a_max=d_range[1])
     # CONVERT TO IMAGE ARRAY
     img = np.zeros([y_max  , x_max ], dtype=np.float)
-    img[y_img, x_img] = scale_to_255(d_points, min=d_range[0], max=d_range[1],dtype=np.float)
+    img[y_img, x_img] = scale_to_1(d_points, min=d_range[0], max=d_range[1],dtype=np.float)
     # print(img.shape)
     return img
 
@@ -78,7 +78,7 @@ def point_cloud_to_panorama(points,
 #                                                        PANORAMA_TO_POINT_CLOUD
 # ==============================================================================
 def panorama_to_point_cloud(image,
-                            v_res = 0.025,
+                            v_res = 0.1,
                             h_res = 0.3,
                             v_height = (-3, 13),
                             d_range = (0,80)
@@ -105,7 +105,7 @@ def panorama_to_point_cloud(image,
     x_image = points[:,1]
     y_image = points[:,0]
     pixel_values = np.array(pixel_values)
-    d_points = _255_to_scale(pixel_values, d_range[0], d_range[1], dtype=np.float)
+    d_points = _1_to_scale(pixel_values, d_range[0], d_range[1], dtype=np.float)
     z_points = y_image * v_res - v_height[0]
     x_image = x_image - 180.0 / h_res
     y_points = np.sin(x_image * h_res_rad) * d_points

@@ -11,6 +11,7 @@ sys.path.append("..")
 from utils.panorama import *
 
 import matplotlib.pyplot as plt
+import open3d as o3d
 
 path16 = "/home/buaaren/carla/ros_env/src/lidarcapture/scripts/lidar16"
 path64 = "/home/buaaren/carla/ros_env/src/lidarcapture/scripts/lidar64"
@@ -47,8 +48,8 @@ def generate_data_from_path(batch_size=4):
         i = random.randrange(batch_counts - 1)
         index_start =  i    *  batch_size
         index_end   = (i+1) *  batch_size
-        # print(lidar16_files[index_start:index_end])
-        # print(lidar64_files[index_start:index_end])
+        print(lidar16_files[index_start:index_end])
+        print(lidar64_files[index_start:index_end])
         x = []
         for file in lidar16_files[index_start:index_end]:
             x.append(point_cloud_to_panorama(preprocessdata(np.load(os.path.join(path16,file))),
@@ -59,12 +60,18 @@ def generate_data_from_path(batch_size=4):
                                             )
                     )
         x = np.asarray(x)
+        # plt.imshow(x[0])
+        # plt.show()
+        pcd=o3d.geometry.PointCloud()
+        points = panorama_to_point_cloud(x[0])
+        pcd.points = o3d.utility.Vector3dVector(points)
+        o3d.visualization.draw_geometries([pcd])
         x = x[:, : ,:, np.newaxis]
         #print(x.shape)
         y = []
         for file in lidar64_files[index_start:index_end]:
             y.append(point_cloud_to_panorama(preprocessdata(np.load(os.path.join(path64,file))),
-                                            v_res = 0.025,
+                                            v_res = 0.1,
                                             h_res = 0.3,
                                             v_height = (-3, 13),
                                             d_range = (0,80)
@@ -72,7 +79,13 @@ def generate_data_from_path(batch_size=4):
                     )
             # y.append(np.load(os.path.join(path64,file)))
         y = np.asarray(y)
+        # plt.imshow(y[0])
+        # plt.show()
         y = y[:, : ,:, np.newaxis]
+        # pcd=o3d.geometry.PointCloud()
+        # points = panorama_to_point_cloud(y[0])
+        # pcd.points = o3d.utility.Vector3dVector(points)
+        # o3d.visualization.draw_geometries([pcd])
         #print(y.shape)
         # print("i:"+str(i))
         yield (x,y)
@@ -86,7 +99,7 @@ if __name__=='__main__':
     #     plt.imshow(img)
     #     plt.show()
     #     print(npy.shape)
-    generate_data_from_path(batch_size=10)
+    generate_data_from_path(batch_size=2)
 
 
 
