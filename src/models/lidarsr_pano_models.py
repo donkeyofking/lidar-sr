@@ -30,7 +30,6 @@ K.set_session(tf.Session(config=config))
 #################################   DataSet Parameters    #################################
 ###########################################################################################
 
-upscaling_factor = 4
 
 
 
@@ -96,7 +95,7 @@ def UNet():
     act_func = 'relu'
     kernel_init = 'he_normal'
 
-    inputs = Input((160,1200,1))
+    inputs = Input((v_max,h_max,1))
 
     # upscailing
     x0 = inputs
