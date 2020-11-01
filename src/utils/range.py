@@ -2,15 +2,16 @@ import numpy as np
 
 
 def pointcloud_2_range(points,
-                        channels = 64,
-                        image_cols = 1024,
-                        ang_start_y = 16.6,
-                        max_range = 80.0,
-                        min_range = 2.0
+                        channels = 400,
+                        image_cols = 1808,
+                        ang_start_y = 25,
+                        ang_y_total = 40,
+                        max_range = 160,
+                        min_range = 3.0
                         ):
     ang_res_x = 360.0/float(image_cols) 
-    ang_res_y = 33.2/float(image_rows_full-1)
-    range_image = np.zeros((1, image_rows_full, image_cols, 1), dtype=np.float32)
+    ang_res_y = ang_y_total/float(channels-1)
+    range_image = np.zeros((1, channels, image_cols, 1), dtype=np.float32)
     x = points[:,0]
     y = points[:,1]
     z = points[:,2]
@@ -29,7 +30,7 @@ def pointcloud_2_range(points,
     thisRange[thisRange < min_range] = 0
     # save range info to range image
     for i in range(len(thisRange)):
-        if rowId[i] < 0 or rowId[i] >= image_rows_full or colId[i] < 0 or colId[i] >= image_cols:
+        if rowId[i] < 0 or rowId[i] >= channels or colId[i] < 0 or colId[i] >= image_cols:
             continue
         range_image[0, rowId[i], colId[i], 0] = thisRange[i]
     # append range image to array
@@ -37,27 +38,42 @@ def pointcloud_2_range(points,
 
 
 
-def range_2_pointcloud(image,
-                        channels = 64,
-                        image_cols = 1024,
-                        ang_start_y = 16.6,
-                        max_range = 80.0,
-                        min_range = 2.0
+def range_2_pointcloud(thisImage,
+                        channels = 128,
+                        image_cols = 1808,
+                        ang_start_y = 25,
+                        ang_y_total = 40,
+                        max_range = 160.0,
+                        min_range = 3.0
                         ):
+
+
     if len(thisImage.shape) == 3:
         thisImage = thisImage[:,:,0]
-
-    lengthList = thisImage.reshape(image_rows_high*image_cols)
+    lengthList = thisImage.reshape(channels*image_cols)
     lengthList[lengthList > max_range] = 0.0
     lengthList[lengthList < min_range] = 0.0
 
-    x = np.sin(self.horizonAngle) * np.cos(self.verticalAngle) * lengthList
-    y = np.cos(self.horizonAngle) * np.cos(self.verticalAngle) * lengthList
-    z = np.sin(self.verticalAngle) * lengthList
+    rowList = []
+    colList = []
+    for i in range(channels):
+        rowList = np.append(rowList, np.ones(image_cols)*i)
+        colList = np.append(colList, np.arange(image_cols))
+
+    ang_res_x = 360.0/float(image_cols) 
+    ang_res_y = ang_y_total/float(channels-1)
+
+    verticalAngle = np.float32(rowList * ang_res_y) - ang_start_y
+    horizonAngle = - np.float32(colList + 1 - (image_cols/2)) * ang_res_x + 90.0
+    
+    verticalAngle = verticalAngle / 180.0 * np.pi
+    horizonAngle = horizonAngle / 180.0 * np.pi
+
+    x = np.sin(horizonAngle) * np.cos(verticalAngle) * lengthList
+    y = np.cos(horizonAngle) * np.cos(verticalAngle) * lengthList
+    z = np.sin(verticalAngle) * lengthList
     
     points = np.column_stack((x,y,z))
     points = np.delete(points, np.where(lengthList==0), axis=0) # comment this line for visualize at the same speed (for video generation)
-    # unfinished
-    
-    # laserCloudOut = pc2.create_cloud(header, self.fields, points)
-    # pubHandle.publish(laserCloudOut)
+
+    return points

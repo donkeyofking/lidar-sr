@@ -20,14 +20,14 @@ def train():
     
 
     print('Training model...      ')
-    history = model.fit_generator(generate_data_from_path(1),
+    history = model.fit_generator(generate_data_from_path(4),
                                 steps_per_epoch=400, 
-                                epochs=1, 
+                                epochs=10, 
                                 max_queue_size=10,
                                 verbose=1,
                                 # shuffle=True,
                                 workers=1,
-                                validation_data=generate_data_from_path(1),
+                                validation_data=generate_data_from_path(4),
                                 validation_steps=100,
                                 callbacks=[model_checkpoint, tensorboard])
     print("training finished")
@@ -42,17 +42,19 @@ def test():
     if not os.path.exists(pred64):
         os.makedirs(pred64)
     model, _, _ = get_model('testing')
-    # weight_name = "/home/buaaren/my_project/lidar-sr/src/train_log/LidarSR_panorama/latest/weights/weights.h5"
+    # weight_name = "/home/buaaren/lidar-sr/src/train_log/LidarSR_panorama/latest/weights/weights.h5"
     model.load_weights(weight_name)
     for testfile in lidar16_test_files:
         x = []
-        testdata = point_cloud_to_panorama(np.load(os.path.join(test16,testfile)),
+        testdata = point_cloud_to_panorama_2(np.load(os.path.join(test16,testfile)),
                                             v_res = v_res,
                                             h_res = h_res,
-                                            v_height = (-3, 13),
+                                            v_height = v_height,
                                             d_range = (0,80),
                                             )
-        testdata = testdata[np.newaxis, : ,:, np.newaxis]
+        testdata = testdata[np.newaxis, : ,:, :]
+        # testdata = testdata[np.newaxis, : ,:, np.newaxis]
+
         print(testdata.shape)
         this_prediction = model.predict(testdata, verbose=1)
         print(this_prediction.shape)
@@ -61,9 +63,9 @@ def test():
         np.save(os.path.join(pred64,testfile),this_prediction)
     print("Test finished.")
 
+
+
 if __name__ == '__main__':
-
-
 
     # -> train network
     train()

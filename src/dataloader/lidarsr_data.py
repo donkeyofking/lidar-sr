@@ -5,6 +5,7 @@ import time
 import math
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 
@@ -24,6 +25,9 @@ def get_low_res_from_high_res(high_res_data):
     return low_res_data
 
 training_data_file_name = '/media/buaaren/harddisk2t/ren/zeno/lidar_upsample_data/carla_ouster_range_image.npy'
+# training_data_file_name = 'carla_ouster_range_image.npy'
+# training_data_file_name = '/home/buaaren/lidar-sr-dataset/carla64.npy'
+# training_data_file_name = '/home/buaaren/lidar-sr-dataset/ous64.npy'
 
 i=0
 def generate_data_from_file(batch_size=4):
@@ -46,6 +50,9 @@ def generate_data_from_file(batch_size=4):
         x = get_low_res_from_high_res(y)
         # print("i:"+str(i))
         i = i+1
+        if i>= batch_no:
+            i=0
+        # print(x.shape)
         yield (x,y)
 
 if __name__=='__main__':

@@ -21,11 +21,11 @@ def train():
 
     print('Compiling model...     ')
     model, model_checkpoint, tensorboard = get_model('training')
-    
+
 
     print('Training model...      ')
     history = model.fit_generator(generate_data_from_file(),
-                                steps_per_epoch=200, 
+                                steps_per_epoch=400, 
                                 epochs=20, 
                                 max_queue_size=10,
                                 verbose=1,

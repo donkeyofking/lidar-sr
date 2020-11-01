@@ -148,7 +148,8 @@ def UNet():
     loss_func = DSSIMObjective()
 
     model = Model(inputs=inputs, outputs=outputs)
-    model.compile(optimizer=Adam(lr=0.0001, decay=0.00001),loss=loss_func ,metrics =['accuracy', 'mse' , 'mae', PSNR, loss_func ] )
+    # model.compile(optimizer=Adam(lr=0.0001, decay=0.00001),loss=loss_func ,metrics =['accuracy', 'mse' , 'mae', PSNR, loss_func ] )
+    model.compile(optimizer=Adam(lr=0.0001, decay=0.00001),loss='mse' ,metrics =['accuracy', 'mse' , 'mae', PSNR, loss_func ] )
 
     model.summary()
 
