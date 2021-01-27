@@ -10,7 +10,7 @@ frames. This helps the model learning the temporal continuity information captur
 # Workflow
 ![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/workflow.png)
 
-# Use a self-driving chasis to colllect data and build its digital twin in carla
+# Use a self-driving chasis to collect data and build its digital twin in carla
 ![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/platform.png)
 
 # The data collected from the carla
@@ -21,6 +21,8 @@ frames. This helps the model learning the temporal continuity information captur
 
 # The projecting method
 ![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/projecting.png)
+
+# Network
 
 # Results
 ![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/result_carla.png)
