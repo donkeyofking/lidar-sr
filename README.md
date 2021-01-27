@@ -23,6 +23,7 @@ frames. This helps the model learning the temporal continuity information captur
 ![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/projecting.png)
 
 # Network
+![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/network.png)
 
 # Results
 ![image](https://github.com/donkeyofking/lidar-sr/blob/master/pics/result_carla.png)
